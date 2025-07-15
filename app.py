@@ -72,20 +72,20 @@ class Post(db.Model):
 # Passing the name parametere from the url i.e. app.route() passes it to the function.....
 
 def permit_login(username, password):
-	try:
-		user = User.query.filter_by(username=username).first()
+	user = User.query.filter_by(username=username).first()
+	if user:
 		# Compare Passwords...
 		if sha256_crypt.verify(password, user.password):
 			session['username'] = username
 			session['logged_in'] = True
-			flash('Successfully logged in !', category='success')
+			flash('Successfully logged in!', category='success')
 			return redirect(url_for('dashboard'))
 		else:
-			flash('Passwords do not match', category='danger')
-			return render_template("home.html")
-	except DoesNotExist as e:
-		flash('Please check login credentials !', category='danger')
-		return render_template("home.html")
+			flash('Incorrect password.', category='danger')
+	else:
+		flash('Username does not exist.', category='danger')
+	return render_template("home.html")
+
 
 def is_logged_in(f):
 	@wraps(f)
